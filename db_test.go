@@ -15,7 +15,7 @@ var testPath = "./tmp"
 func TestMultiGoroutineWrite(_ *testing.T) {
 	wg := sync.WaitGroup{}
 	db := CloudLockerClient{
-		Url: testUrl,
+		url: testUrl,
 	}
 	server, _ := cloudlocker.NewLockerServer(testPath, testUrl4Server)
 	go server.Start()
@@ -45,7 +45,7 @@ func TestMultiGoroutineWrite(_ *testing.T) {
 
 func TestBasics(t *testing.T) {
 	db := CloudLockerClient{
-		Url: testUrl,
+		url: testUrl,
 	}
 
 	server, _ := cloudlocker.NewLockerServer(testPath, testUrl4Server)

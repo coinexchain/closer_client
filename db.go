@@ -18,12 +18,16 @@ type DB interface {
 var _ DB = CloudLockerClient{}
 
 type CloudLockerClient struct {
-	Url string
+	url string
+}
+
+func NewCloudLockerClient(url string) *CloudLockerClient {
+	return &CloudLockerClient{url: url}
 }
 
 //if key is not exist, return nil slice and error is nil
 func (c CloudLockerClient) Get(key []byte) ([]byte, error) {
-	resp, _ := http.Post(c.Url+"/get", "application/json", strings.NewReader(string(key)))
+	resp, _ := http.Post(c.url+"/get", "application/json", strings.NewReader(string(key)))
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	return body, err
@@ -35,12 +39,12 @@ func (c CloudLockerClient) Set(key, value []byte) error {
 		V: value,
 	}
 	b, _ := json.Marshal(e)
-	_, err := http.Post(c.Url+"/set", "application/json", strings.NewReader(string(b)))
+	_, err := http.Post(c.url+"/set", "application/json", strings.NewReader(string(b)))
 	return err
 }
 
 func (c CloudLockerClient) Delete(key []byte) error {
-	_, err := http.Post(c.Url+"/delete", "application/json", strings.NewReader(string(key)))
+	_, err := http.Post(c.url+"/delete", "application/json", strings.NewReader(string(key)))
 	return err
 }
 
