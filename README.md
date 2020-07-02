@@ -1,2 +1,2 @@
-# closer_client
-cloudcloser client lib
+# locker_client
+cloudlocker client lib
