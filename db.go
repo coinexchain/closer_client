@@ -1,9 +1,7 @@
 package locker_client
 
 import (
-	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -11,7 +9,7 @@ import (
 
 type DB interface {
 	Get(key []byte) ([]byte, error)
-	Set(key, value []byte) error
+	Set(key []byte, value interface{}) error
 	Delete(key []byte) error
 }
 
@@ -33,9 +31,9 @@ func (c CloudLockerClient) Get(key []byte) ([]byte, error) {
 	return body, err
 }
 
-func (c CloudLockerClient) Set(key, value []byte) error {
+func (c CloudLockerClient) Set(key []byte, value interface{}) error {
 	e := entry{
-		K: key,
+		K: string(key),
 		V: value,
 	}
 	b, _ := json.Marshal(e)
@@ -49,29 +47,6 @@ func (c CloudLockerClient) Delete(key []byte) error {
 }
 
 type entry struct {
-	K hexBytes `json:"k"`
-	V hexBytes `json:"v"`
-}
-
-type hexBytes []byte
-
-func (bz hexBytes) MarshalJSON() ([]byte, error) {
-	s := strings.ToUpper(hex.EncodeToString(bz))
-	jbz := make([]byte, len(s)+2)
-	jbz[0] = '"'
-	copy(jbz[1:], []byte(s))
-	jbz[len(jbz)-1] = '"'
-	return jbz, nil
-}
-
-func (bz *hexBytes) UnmarshalJSON(data []byte) error {
-	if len(data) < 2 || data[0] != '"' || data[len(data)-1] != '"' {
-		return fmt.Errorf("invalid hex string: %s", data)
-	}
-	bz2, err := hex.DecodeString(string(data[1 : len(data)-1]))
-	if err != nil {
-		return err
-	}
-	*bz = bz2
-	return nil
+	K string      `json:"k"`
+	V interface{} `json:"v"`
 }
