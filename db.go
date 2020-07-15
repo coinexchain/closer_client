@@ -9,7 +9,7 @@ import (
 
 type DB interface {
 	Get(key []byte) ([]byte, error)
-	Set(key []byte, value interface{}) error
+	Set(key, value []byte) error
 	Delete(key []byte) error
 }
 
@@ -31,10 +31,10 @@ func (c CloudLockerClient) Get(key []byte) ([]byte, error) {
 	return body, err
 }
 
-func (c CloudLockerClient) Set(key []byte, value interface{}) error {
+func (c CloudLockerClient) Set(key, value []byte) error {
 	e := entry{
 		K: string(key),
-		V: value,
+		V: string(value),
 	}
 	b, _ := json.Marshal(e)
 	_, err := http.Post(c.url+"/set", "application/json", strings.NewReader(string(b)))
@@ -47,6 +47,6 @@ func (c CloudLockerClient) Delete(key []byte) error {
 }
 
 type entry struct {
-	K string      `json:"k"`
-	V interface{} `json:"v"`
+	K string `json:"k"`
+	V string `json:"v"`
 }
